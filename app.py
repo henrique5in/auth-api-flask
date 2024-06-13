@@ -92,8 +92,13 @@ def update_user(id_user):
 @login_required
 def delete_user(id_user):
     user = User.query.get(id_user)
+
+    if current_user.role != 'admin':
+        return jsonify({'message': 'You are not authorized to delete user'}), 403
+
     if current_user.id == id_user:
-            return jsonify({'message': 'You cannot delete your own account'}), 400
+        return jsonify({'message': 'You cannot delete your own account'}), 400
+    
     if user:
         db.session.delete(user)
         db.session.commit()
