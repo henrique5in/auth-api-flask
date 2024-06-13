@@ -50,7 +50,7 @@ def create_user():
     password = data.get('password')
 
     if username and password:
-        user = User(username=username, password=password)
+        user = User(username=username, password=password, role='user')
         db.session.add(user)
         db.session.commit()
         return jsonify({'message': 'Create user success'}), 201
@@ -76,6 +76,10 @@ def get_user(id_user):
 def update_user(id_user):
     data = request.json
     user = User.query.get(id_user)
+
+    if id_user != current_user.id and current_user.role == 'user':
+        return jsonify({'message': 'You are not authorized to update this user'}), 403
+    
     if user and data.get('password'):
         password = data.get('password')
         user.password = password
